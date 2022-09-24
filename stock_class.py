@@ -15,7 +15,7 @@ class Stock:
         
     def add_data(self, stock_data):
         self.DataList.append(stock_data)
-    
+        
 # Create DailyData class here.
 class DailyData: 
     #Defining variables
