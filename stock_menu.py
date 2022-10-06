@@ -166,12 +166,67 @@ def display_chart(stock_list):
                 
  # Get price and volume history from Yahoo! Finance using CSV import.
 def import_stock_csv(stock_list):
-    print("This method is under construction")
+    print("-----Import Stock CSV-----")
+    for stock in stock_list:
+        print(stock._symbol," ", end="")
+    print("]")    
+    symbol = input("Input Stock Symbol:").upper()
+    filename = input("Input File Name:")
+    for stock in stock_list: 
+        if stock._symbol == symbol:
+            with open(filename, newline='') as stockdata: 
+                datareader = csv.reader(stockdata, delimiter=',')
+                next(datareader)
+                for row in datareader:
+                    daily_data = DailyData(str(row[0]), float(row[4]), float(row[6]))
+                    stock.add_data(daily_data)
+    display_report(stock_list)
     
-   # Display Report 
+# Display Report 
 def display_report(stock_list):
-    print("This method is under construction")
-    
+    print("-----Stock Report-----")
+    for stock in stock_list:
+        print("Report For:", stock._symbol, stock._name)
+        print("Shares:", stock._shares)
+        count = 0
+        price_total = 0
+        volume_total = 0
+        lowPrice = 999999.99
+        highPrice = 0
+        lowVolume = 99999999999
+        highVolume = 0
+        
+        for daily_data in stock.DataList:
+            count += 1
+            price_total = price_total + daily_data.close
+            volume_total = volume_total + daily_data.volume
+            if daily_data.close < lowPrice:
+                lowPrice = daily_data.close
+            if daily_data.close > highPrice:
+                highPrice = daily_data.close
+            if daily_data.volume < lowVolume:
+                lowVolume = daily_data.volume
+            if daily_data.volume > highVolume: 
+                highVolume = daily_data.volume
+            
+            priceChange = highPrice - lowPrice
+            print(daily_data.date, daily_data.close, daily_data.volume)
+        
+        if count > 0:
+            print("-----Summary-----")
+            print("Low Price: ${:,.2f}".format(lowPrice))
+            print("High Price: ${:,.2f}".format(highPrice))
+            print("Average Price: ${:,.2f}".format(price_total/count))
+            print("Low Volume: ", lowVolume)
+            print("High Volume: ", highVolume)
+            print("Average Volume: ".format(volume_total/count))
+            print("Chnage In Price: ${:,.2f}".format(priceChange))
+            print("Profit / Loss: ${:,.2f}".format(priceChange* stock._shares))
+        else:
+            print("-----No Daily History-----")
+        print("\n\n\n")
+        _=input("Press Enter to Continue")
+            
 def main_menu(stock_list):
     option = ""
     while True:
